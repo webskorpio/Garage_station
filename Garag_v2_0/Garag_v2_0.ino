@@ -13,6 +13,7 @@
 #define LEDGPRS 12    // номер пина, Led  
 
 // Переменные таймеров
+
 // Проверка состояния соединения с Internet
 unsigned long connectTime;
 unsigned long newConnectTime;
