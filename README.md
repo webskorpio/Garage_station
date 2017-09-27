@@ -1,10 +1,11 @@
-# Garage_station
+﻿# Garage_station
 Monitoring system for temperature and humidity. V 2.0.
 
 Мониторинг показаний температуры и влажности в гараже. 
 Показания публикуются на проект "Народный мониторинг" narodmon.ru
 Интервал передачи показаний 5 минут.
 Пользователь narodmon.ru - web.skorpio /  web.skorpio@gmail.com
+
 
 ID:	1947
 MAC:	9512973831000000
