@@ -11,6 +11,7 @@
 #define ACDC 10       // номер пина, наличие 220
 #define LED220 11     // номер пина, LED состояния 220
 #define LEDGPRS 12    // номер пина, Led  
+#define LEDGPRS 12    // номер пина, Led
 
 // Переменные таймеров
 
@@ -47,7 +48,7 @@ float readt3; //Данные по температуре   DHT-22 Улица
 bool ac;      // Состояние 220В
 bool gprsIp;  // Состояние соединения с Internet
 int LCD = 0;  // Изначальная строка на LCD
-String val;   // Переменная с данными для отправки 
+String val;   // Переменная с данными для отправки
 #define gsm Serial1
 
 
@@ -69,7 +70,7 @@ int errSensor3 = 0;
 
 void setup() {
 Serial.begin(19200);
-  gsm.begin(19200);  
+  gsm.begin(19200);
   dht1.begin();
   dht2.begin();
   dht3.begin();
@@ -85,7 +86,7 @@ Serial.begin(19200);
   //Период вывода данных на LCD
   lcdTime = millis();
   newLcdTime = lcdTime;
-  
+
   //Настраиваем пины
   pinMode(LED220, OUTPUT);
   pinMode(ACDC, OUTPUT);
@@ -93,7 +94,7 @@ Serial.begin(19200);
   pinMode(STATLED1, OUTPUT);
   pinMode(STATLED1, OUTPUT);
 
-  //Выставляем уровни на пинах при Вкл. 
+  //Выставляем уровни на пинах при Вкл.
   digitalWrite(ACDC, HIGH);
   digitalWrite(LED220, LOW);
   digitalWrite(LEDGPRS, LOW);
@@ -115,25 +116,25 @@ Serial.begin(19200);
   lcdPrint();
 
   //Проверяем готовность модема
-  do{            
-     gsm.println("AT+CPAS");         
+  do{
+     gsm.println("AT+CPAS");
      Serial.print(".");
-     delay(100);  
+     delay(100);
      }while(!gsm.find("0"));
 
   //Проверяем регистрацию модема в сети
-  do{             
-     gsm.println("AT+CREG?");        
+  do{
+     gsm.println("AT+CREG?");
      Serial.print(":");
-     delay(100);  
+     delay(100);
       }while(!gsm.find("+CREG: 0,1"));
 
-  //Выключаем эхо      
-  gsm.println("ATE0");      
-  delay(100); 
+  //Выключаем эхо
+  gsm.println("ATE0");
+  delay(100);
   //ХЗ что за функция
   gsm.flush();
- 
+
   //Соединяемся с Internet
   gprsconnect();
 
@@ -142,7 +143,7 @@ Serial.begin(19200);
 void loop() {
 
   //Вывод данных на дисплей раз в 5 сек.
-  lcdTime = millis();                  
+  lcdTime = millis();
   if(lcdTime >= (newLcdTime + 5000) or lcdTime <= (newLcdTime - 1000)){
     sensorRead();
     lcdPrint();
@@ -153,96 +154,96 @@ void loop() {
   connectTime = millis();
   if(connectTime >= (newConnectTime + 60000) or connectTime <= (newConnectTime - 1000)){
    gsm.println("at+xiic?");
-   delay(100);  
+   delay(100);
    if (gsm.find("0.0.0.0")){
-       
+
      // если нет, то подключаемся
-     gprsconnect();       
+     gprsconnect();
      delay(2000);
-    }else{ 
-        Serial.print("/");  
-        gprsIp = 1; 
+    }else{
+        Serial.print("/");
+        gprsIp = 1;
       }
     newConnectTime=connectTime;
    }
 
   //Отправляем данные на narodmon.ru раз в 5 минут.
-  currentTime = millis();                          
+  currentTime = millis();
   if(currentTime >= (loopTime + 300000) or currentTime <= (loopTime -1000)){
     gprssend();
-    loopTime = currentTime;   
+    loopTime = currentTime;
   }
 }
 
 //Функция опроса и подготовки данных на отправку
 void sensorRead(){
-  
+
   //Опрос DHT22
   readh1 = dht1.readHumidity();
   readt1 = dht1.readTemperature();
   readh2 = dht2.readHumidity();
   readt2 = dht2.readTemperature();
   readt3 = dht3.readTemperature();
-   
+
   //Проверяем датчики на "NAN" вместо данных
-  
+
   //DHT-22 1-й этаж
-  if (isnan(readt1) || isnan(readh1)) { 
+  if (isnan(readt1) || isnan(readh1)) {
     //Если ошибки до этого не было ставим флаг 1
     if(errSensor1 == 0){ errSensor1++; }
-    
-  }else{ 
+
+  }else{
     //Если браньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor1 != 0){errSensor1 = 0;}
     //Обновляем данные в переменных на новые.
-    h1=readh1; 
-    t1=readt1; 
+    h1=readh1;
+    t1=readt1;
   }
-  
-  //DHT-22 подвал  
-  if (isnan(readt2) || isnan(readh2)) { 
+
+  //DHT-22 подвал
+  if (isnan(readt2) || isnan(readh2)) {
     //Если ошибки до этого не было ставим флаг 1
     if(errSensor2 == 0){ errSensor2++; }
-     
-  }else{ 
+
+  }else{
     //Если браньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor2 != 0){errSensor2 = 0;}
     //Обновляем данные в переменных на новые.
-    h2=readh2; 
-    t2=readt2; 
+    h2=readh2;
+    t2=readt2;
   }
-  
-    //DHT-22 Улица  
-  if (isnan(readt3)) { 
+
+    //DHT-22 Улица
+  if (isnan(readt3)) {
     //Если ошибки до этого не было ставим флаг 1
     if(errSensor3 == 0){ errSensor3++; }
-     
-  }else{ 
+
+  }else{
     //Если браньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor3 != 0){errSensor3 = 0;}
     //Обновляем данные в переменных на новые.
-    t3=readt3; 
+    t3=readt3;
   }
-    
+
     //Проверяем состояние датчиков. Если есть ошибка чтения включаем индикацию
     if(errSensor1 != 0) { digitalWrite(STATLED1, HIGH); }else{ digitalWrite(STATLED1, LOW); }
     if(errSensor2 != 0) { digitalWrite(STATLED2, HIGH); }else{ digitalWrite(STATLED2, LOW); }
-  
+
 
   //Считываем состояние 220В
   ac = digitalRead(ACDC);
-  
+
   //Выставляем статус светодиода наличия 220В
   if(ac == HIGH) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }
-  
+
   //Выставляем статус светодиода наличия соединения с Internet
   if (gprsIp == 0){ digitalWrite(LEDGPRS, LOW); }else{ digitalWrite(LEDGPRS, HIGH); }
 
-    //Собираем данные в кучу для отправки  
+    //Собираем данные в кучу для отправки
     val = "#9512973831000000#Garage.Station\n#H1DHT22#";
     val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#U0#"+loadvoltage+"\n#I0#"+current_mA+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
     val = val + "\n##";
-  
+
 }
 
 //Функция вывода на lcd
@@ -261,7 +262,7 @@ void lcdPrint(){
     lcd.print("C H");
     lcd.print(h2);
     lcd.print("%");
-    
+
     //Переходим на следующую страницу дисплея
     LCD++;
     }else{
@@ -277,7 +278,7 @@ void lcdPrint(){
       lcd.print("V  A");
       lcd.print(current_mA);
       lcd.print("mA");
-      
+
       //Сбрасываем на 1 страницу отображения
       LCD = 0;
     }
@@ -285,65 +286,65 @@ void lcdPrint(){
 
 //Функция соединения с интернетом
 void gprsconnect(){
-  
+
   // включаем РРР
-  gsm.println("AT+XISP=0");  
+  gsm.println("AT+XISP=0");
   delay(100);
   //Настраиваем соединение
-  gsm.println("AT+CGDCONT=1,\"IP\",\"internet.tele2.ru\"");   
+  gsm.println("AT+CGDCONT=1,\"IP\",\"internet.tele2.ru\"");
   delay(100);
-  gsm.println("AT+XGAUTH=1,1,\"\",\"\"");   
+  gsm.println("AT+XGAUTH=1,1,\"\",\"\"");
   delay(100);
-  gsm.println("at+xiic=1");   
+  gsm.println("at+xiic=1");
   delay(100);
-  
+
   //Проверяем выдали ли нам IP
-  do{             
-    gsm.println("at+xiic?");         
+  do{
+    gsm.println("at+xiic?");
     Serial.print(".");
     delay(300);
-  
+
     //Если нет соединения с Internet гасим диод
-    gprsIp = 0;  
+    gprsIp = 0;
   }while(gsm.find("0.0.0.0"));
-  
+
   //Если соединение установлено зажигаем диод
   gprsIp = 1;
-       
-}   
+
+}
 //Функция отправки данных на narodmon.ru
 void gprssend(){
 
   //Закрываем соединение, на всякий случай
-  gsm.println("AT+TCPCLOSE=0");               
-  
+  gsm.println("AT+TCPCLOSE=0");
+
   //В цикле соединяемся с сервером народмон
-  while(1){ 
-    gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");   
+  while(1){
+    gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");
     delay(2500);
-    
+
     //Если соединились, выходим из цикла
-    if (gsm.find("+TCPSETUP:0,OK")) break; 
-    Serial.println("tcp_err"); 
-    
-    //Если нет, проверяем соединины ли с интернетом               
-    gsm.flush(); 
+    if (gsm.find("+TCPSETUP:0,OK")) break;
+    Serial.println("tcp_err");
+
+    //Если нет, проверяем соединины ли с интернетом
+    gsm.flush();
     gsm.println("at+xiic?");
-    delay(100);  
+    delay(100);
     if (gsm.find("0.0.0.0")){
 
       //Если нет, то подключаемся
-      gprsconnect();       
+      gprsconnect();
       delay(2000);
     }
   }
-  
+
   //Отправляем
-  int buff = val.length();         
+  int buff = val.length();
   gsm.print("at+tcpsend=0,");
   gsm.println(buff);
-  delay(100); 
-  gsm.println(val);  
+  delay(100);
+  gsm.println(val);
   delay(250);
   if (gsm.find("+TCPSEND")) Serial.println("sendOK");
   else Serial.println("sendERROR");
