@@ -1,3 +1,6 @@
+#include <SoftwareSerial.h>
+#include <LiquidCrystal_I2C.h>
+#include <DHT.h>
 #include <Wire.h>
 
 #define STATLED1 6    // номер пина, LED статус ошибки чтения датчика на 1-м этаже
@@ -10,7 +13,6 @@
 #define LEDGPRS 12    // номер пина, Led  
 
 // Переменные таймеров
-
 // Проверка состояния соединения с Internet
 unsigned long connectTime;
 unsigned long newConnectTime;
