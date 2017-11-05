@@ -10,7 +10,6 @@
 #define DHTPIN3 9     // номер пина, DHT22-3
 #define ACDC 10       // номер пина, наличие 220
 #define LED220 11     // номер пина, LED состояния 220
-#define LEDGPRS 12    // номер пина, Led  
 #define LEDGPRS 12    // номер пина, Led
 
 // Переменные таймеров
