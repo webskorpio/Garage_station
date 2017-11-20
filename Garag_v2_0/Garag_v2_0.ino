@@ -53,7 +53,7 @@ String val;   // Переменная с данными для отправки
 
 
 //Указываем пины soft UART
-SoftwareSerial gsm(2, 3); // RX, TX
+SoftwareSerial gsm(3, 4); // RX, TX
 //Устанавливаем i2c адресс дисплея
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -73,7 +73,7 @@ Serial.begin(19200);
   dht1.begin();
   dht2.begin();
   dht3.begin();
-  ina219.begin();
+
 
   //Cчитываем время, прошедшее с момента запуска программы таймеров
   //Проверка состояния соединения
