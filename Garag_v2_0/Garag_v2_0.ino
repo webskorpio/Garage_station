@@ -9,8 +9,9 @@
 #define DHTPIN2 8     // номер пина, DHT22-2
 #define DHTPIN3 9     // номер пина, DHT22-3
 #define ACDC 10       // номер пина, наличие 220
-#define LED220 11     // номер пина, LED состояния 220
-#define LEDGPRS 12    // номер пина, Led
+#define LEDGPRS 11    // номер пина, Led
+#define LED220 12     // номер пина, LED состояния 220
+
 
 // Переменные таймеров
 
@@ -46,9 +47,7 @@ DHT dht2(DHTPIN2, DHT22);
 DHT dht3(DHTPIN3, DHT22);
 
 // Переменная состояния датчиков
-int errSensor1 = 0;
-int errSensor2 = 0;
-int errSensor3 = 0;
+int errSensor1 = 0; int errSensor2 = 0; int errSensor3 = 0;
 
 void setup() {
 Serial.begin(19200);
@@ -94,23 +93,30 @@ Serial.begin(19200);
   if(ac == LOW) {digitalWrite(LED220, HIGH);}else{digitalWrite(LED220, LOW);}
 
   //Считываем показания сенсоров и выводим их на дисплей
-  sensorRead();
-  lcdPrint();
 
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("TEST MODEM: ");
   //Проверяем готовность модема
   do{
      gsm.println("AT+CPAS");
      Serial.print(".");
      delay(100);
      }while(!gsm.find("0"));
-
+     delay(1000);
+     lcd.print("OK");
+     delay(2000);
   //Проверяем регистрацию модема в сети
+    lcd.setCursor(0,1);
+    lcd.print("REG. THE NET: ");
   do{
      gsm.println("AT+CREG?");
      Serial.print(":");
      delay(100);
       }while(!gsm.find("+CREG: 0,1"));
-
+    delay(1000);
+    lcd.print("OK");
+    delay(2000);
   //Выключаем эхо
   gsm.println("ATE0");
   delay(100);
@@ -118,8 +124,17 @@ Serial.begin(19200);
   gsm.flush();
 
   //Соединяемся с Internet
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("INTERNET: ");
   gprsconnect();
-
+  delay(1000);
+    lcd.print("OK");
+    delay(1000);
+    lcd.setCursor(0,1);
+    lcd.print("  START SYSTEM  ");
+  sensorRead();
+  lcdPrint();
 }
 
 void loop() {
@@ -161,10 +176,8 @@ void loop() {
 void sensorRead(){
 
   //Опрос DHT22
-  readh1 = dht1.readHumidity();
-  readt1 = dht1.readTemperature();
-  readh2 = dht2.readHumidity();
-  readt2 = dht2.readTemperature();
+  readh1 = dht1.readHumidity(); readt1 = dht1.readTemperature();
+  readh2 = dht2.readHumidity(); readt2 = dht2.readTemperature();
   readt3 = dht3.readTemperature();
 
   //Проверяем датчики на "NAN" вместо данных
@@ -223,7 +236,7 @@ void sensorRead(){
 
     //Собираем данные в кучу для отправки
     val = "#9512973831000000#Garage.Station\n#H1DHT22#";
- //   val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#U0#"++"\n#I0#"++"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
+    val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
     val = val + "\n##";
 
 }
@@ -252,7 +265,7 @@ void lcdPrint(){
       lcd.setCursor(0,0);
       lcd.print("3T");
       lcd.print(t3);
-      lcd.print("C AC:");
+      lcd.print("C    AC:");
       lcd.print(!ac);
       //Сбрасываем на 1 страницу отображения
       LCD = 0;
