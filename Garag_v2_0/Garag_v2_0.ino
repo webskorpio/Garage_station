@@ -15,34 +15,17 @@
 // Переменные таймеров
 
 // Проверка состояния соединения с Internet
-unsigned long connectTime;
-unsigned long newConnectTime;
+unsigned long connectTime, newConnectTime;
 
 // Интервал отправки данных
-unsigned long currentTime;
-unsigned long loopTime;
+unsigned long currentTime, loopTime;
 
 // Интервал обновления данных на дисплее
-unsigned long lcdTime;
-unsigned long newLcdTime;
-
-// Переменные для монитора напряжения и тока
-float shuntvoltage = 0;
-float busvoltage = 0;
-float current_mA = 0;
-float loadvoltage = 0;
+unsigned long lcdTime, newLcdTime;
 
 //Переменные для 3-х DHT-22
-float h1;     //Влажность с DHT-1
-float t1;     //Температура с DHT-1
-float h2;     //Влажность с DHT-2
-float t2;     //Температура с DHT-2
-float t3;     //Температура с DHT-3
-float readh1; //Данные по влажности     DHT-22 1-й этаж
-float readt1; //Данные по температуре   DHT-22 1-й этаж
-float readh2; //Данные по влажности     DHT-22 Подвал
-float readt2; //Данные по температуре   DHT-22 Подвал
-float readt3; //Данные по температуре   DHT-22 Улица
+float h1, t1, h2, t2, t3;     //Температура и влажность DHT-22
+float readh1, readt1, readh2, readt2, readt3; 
 
 bool ac;      // Состояние 220В
 bool gprsIp;  // Состояние соединения с Internet
@@ -240,7 +223,7 @@ void sensorRead(){
 
     //Собираем данные в кучу для отправки
     val = "#9512973831000000#Garage.Station\n#H1DHT22#";
-    val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#U0#"+loadvoltage+"\n#I0#"+current_mA+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
+ //   val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#U0#"++"\n#I0#"++"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
     val = val + "\n##";
 
 }
@@ -271,13 +254,6 @@ void lcdPrint(){
       lcd.print(t3);
       lcd.print("C AC:");
       lcd.print(!ac);
-      lcd.setCursor(0,1);
-      lcd.print("V");
-      lcd.print(loadvoltage);
-      lcd.print("V  A");
-      lcd.print(current_mA);
-      lcd.print("mA");
-
       //Сбрасываем на 1 страницу отображения
       LCD = 0;
     }
