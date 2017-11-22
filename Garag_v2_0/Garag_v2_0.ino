@@ -32,6 +32,7 @@ bool ac;      // Состояние 220В
 bool gprsIp;  // Состояние соединения с Internet
 int LCD = 0;  // Изначальная строка на LCD
 String val;   // Переменная с данными для отправки
+String ip;    // Переменная текущего IP адресса в сети
 #define gsm Serial1
 
 
@@ -133,6 +134,7 @@ Serial.begin(19200);
     delay(1000);
     lcd.setCursor(0,1);
     lcd.print("  START SYSTEM  ");
+    ipRep(); // определяем наш IP
   sensorRead();
   lcdPrint();
 }
@@ -141,7 +143,7 @@ void loop() {
 
   //Вывод данных на дисплей раз в 5 сек.
   lcdTime = millis();
-  if(lcdTime >= (newLcdTime + 5000) or lcdTime <= (newLcdTime - 1000)){
+  if(lcdTime >= (newLcdTime + 4999) or lcdTime <= (newLcdTime - 1000)){
     sensorRead();
     lcdPrint();
     newLcdTime = lcdTime;
@@ -156,6 +158,7 @@ void loop() {
 
      // если нет, то подключаемся
      gprsconnect();
+     ipRep();
      delay(2000);
     }else{
         Serial.print("/");
@@ -166,7 +169,7 @@ void loop() {
 
   //Отправляем данные на narodmon.ru раз в 5 минут.
   currentTime = millis();
-  if(currentTime >= (loopTime + 300000) or currentTime <= (loopTime -1000)){
+  if(currentTime >= (loopTime + 299999) or currentTime <= (loopTime -1000)){
     gprssend();
     loopTime = currentTime;
   }
@@ -188,7 +191,7 @@ void sensorRead(){
     if(errSensor1 == 0){ errSensor1++; }
 
   }else{
-    //Если браньше была ошибка а теперь нет сбрасываем флаг на 0
+    //Если раньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor1 != 0){errSensor1 = 0;}
     //Обновляем данные в переменных на новые.
     h1=readh1;
@@ -201,7 +204,7 @@ void sensorRead(){
     if(errSensor2 == 0){ errSensor2++; }
 
   }else{
-    //Если браньше была ошибка а теперь нет сбрасываем флаг на 0
+    //Если раньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor2 != 0){errSensor2 = 0;}
     //Обновляем данные в переменных на новые.
     h2=readh2;
@@ -214,7 +217,7 @@ void sensorRead(){
     if(errSensor3 == 0){ errSensor3++; }
 
   }else{
-    //Если браньше была ошибка а теперь нет сбрасываем флаг на 0
+    //Если раньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor3 != 0){errSensor3 = 0;}
     //Обновляем данные в переменных на новые.
     t3=readt3;
@@ -267,6 +270,8 @@ void lcdPrint(){
       lcd.print(t3);
       lcd.print("C    AC:");
       lcd.print(!ac);
+      lcd.setCursor(0,1);
+      lcd.print(ip);
       //Сбрасываем на 1 страницу отображения
       LCD = 0;
     }
@@ -300,6 +305,27 @@ void gprsconnect(){
   gprsIp = 1;
 
 }
+//Функция определения IP адресса.
+String ipRep(){
+  
+  String inputString;
+  boolean stringComplete = false;
+  
+  gsm.println("at+xiic?"); // Отправляем запрос в модем
+  while (gsm.available()) // если модем ответил
+  {
+    char inChar = (char)gsm.read(); //заполняем буфер
+    inputString += inChar;
+    if (inChar == '\n') stringComplete = true; // ставим флаг что есть данные
+  }
+  if(stringComplete == true){
+    ip = inputString.substring(12); //Записываем с 13-го симво и до конца строки. Это наш IP
+    inputString = "";       // очищаем буфер
+    stringComplete = false; // снимаем флаг
+  }
+  return ip;
+}
+
 //Функция отправки данных на narodmon.ru
 void gprssend(){
 
