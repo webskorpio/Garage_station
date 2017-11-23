@@ -66,7 +66,6 @@ void setup() {
   pinMode(STATLED1, OUTPUT);
 
   //Выставляем уровни на портах при Вкл.
-  digitalWrite(ACDC, HIGH);
   digitalWrite(LED220, LOW);
   digitalWrite(LEDGPRS, LOW);
   digitalWrite(STATLED1, LOW);
@@ -122,7 +121,7 @@ void setup() {
     delay(1000);
     lcd.setCursor(0,1);
     lcd.print("  START SYSTEM  ");
-    ipRep(); // определяем наш IP
+    ip = ipRep(); // определяем наш IP
   sensorRead();
   lcdPrint();
 }
@@ -146,7 +145,7 @@ void loop() {
 
      // если нет, то подключаемся
      gprsconnect();
-     ipRep();
+     ip = ipRep();
      delay(2000);
     }else{
         Serial.print("/");
@@ -225,10 +224,7 @@ void sensorRead(){
   //Выставляем статус светодиода наличия соединения с Internet
   if (gprsIp == 0){ digitalWrite(LEDGPRS, LOW); }else{ digitalWrite(LEDGPRS, HIGH); }
 
-    //Собираем данные в кучу для отправки
-    val = "#9512973831000000#Garage.Station\n#H1DHT22#";
-    val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3+"\n#IP#"+ip;
-    val = val + "\n##";
+
 
 }
 
@@ -295,11 +291,13 @@ void gprsconnect(){
 //Функция определения IP адресса.
 
 String ipRep(){
-  
+  int idEnd;
   String inputString;
+  String result;
   boolean stringComplete = false;
   
   gsm.println("at+xiic?"); // Отправляем запрос в модем
+  delay(200);
   while (gsm.available()) // если модем ответил
   {
     char inChar = (char)gsm.read(); //заполняем буфер
@@ -307,11 +305,13 @@ String ipRep(){
     if (inChar == '\n') stringComplete = true; // ставим флаг что есть данные
   }
   if(stringComplete == true){
-    ip = inputString.substring(12); //Записываем с 13-го симво и до конца строки. Это наш IP
+    idEnd = inputString.length() -8 ;
+    result = inputString.substring(15,idEnd); //Записываем с 13-го симво и до конца строки. Это наш IP
+    idEnd = 0;
     inputString = "";       // очищаем буфер
     stringComplete = false; // снимаем флаг
   }
-  return ip;
+  return result;
 }
 
 //Функция отправки данных на narodmon.ru
@@ -340,6 +340,10 @@ void gprssend(){
       delay(2000);
     }
   }
+    //Собираем данные в кучу для отправки
+    val = "#9512973831000000#Garage.Station\n#H1DHT22#";
+    val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
+    val = val + "\n##";
 
   //Отправляем
   int buff = val.length();
