@@ -58,14 +58,14 @@ void setup() {
   currentTime = millis(); loopTime = currentTime;         // Период отправки данных
   lcdTime = millis(); newLcdTime = lcdTime;               // Период вывода данных на LCD
 
-  //Настраиваем порты
+  // Настраиваем порты
   pinMode(LED220, OUTPUT);
   pinMode(ACDC, OUTPUT);
   pinMode(LEDGPRS, OUTPUT);
   pinMode(STATLED1, OUTPUT);
   pinMode(STATLED1, OUTPUT);
 
-  //Выставляем уровни на портах при Вкл.
+  // Выставляем уровни на портах при Вкл.
   digitalWrite(LED220, LOW);
   digitalWrite(LEDGPRS, LOW);
   digitalWrite(STATLED1, LOW);
@@ -75,25 +75,25 @@ void setup() {
   ac = digitalRead(ACDC);
   if(ac == LOW) {digitalWrite(LED220, HIGH);}else{digitalWrite(LED220, LOW);}
 
-  //Считываем показания сенсоров и выводим их на дисплей
+  // Поэтапный запуск системы:
 
-    lcd.clear(); lcd.setCursor(0,0);
-    lcd.print("TEST MODEM: ");
+  lcd.clear(); lcd.setCursor(0,0);
+  lcd.print("TEST MODEM: ");
     
-  //Проверяем готовность модема
+  // Проверяем готовность модема
   do{
      gsm.println("AT+CPAS");
      Serial.print(".");
      delay(100);
      }while(!gsm.find("0"));
      
-     delay(1000);
-     lcd.print("OK");
-     delay(2000);
+  delay(1000);
+  lcd.print("OK");
+  delay(2000);
      
-  //Проверяем регистрацию модема в сети
-    lcd.setCursor(0,1);
-    lcd.print("REG. THE NET: ");
+  // Проверяем регистрацию модема в сети
+  lcd.setCursor(0,1);
+  lcd.print("REG. THE NET: ");
     
   do{
      gsm.println("AT+CREG?");
@@ -101,34 +101,32 @@ void setup() {
      delay(100);
       }while(!gsm.find("+CREG: 0,1"));
       
-    delay(1000);
-    lcd.print("OK");
-    delay(2000);
+  delay(1000);
+  lcd.print("OK");
+  delay(2000);
     
-  //Выключаем эхо
+  // Выключаем эхо
   gsm.println("ATE0");
   delay(100);
-  //ХЗ что за функция
-  gsm.flush();
-
-  //Соединяемся с Internet
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("INTERNET: ");
+  
+  // Соединяемся с Internet
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("INTERNET: ");
   gprsconnect();
   delay(1000);
-    lcd.print("OK");
-    delay(1000);
-    lcd.setCursor(0,1);
-    lcd.print("  START SYSTEM  ");
-    ip = ipRep(); // определяем наш IP
+  lcd.print("OK");
+  delay(1000);
+  lcd.setCursor(0,1);
+  lcd.print("  START SYSTEM  ");
+  ip = ipRep(); // определяем наш IP
   sensorRead();
   lcdPrint();
 }
 
 void loop() {
 
-  //Вывод данных на дисплей раз в 5 сек.
+  // Вывод данных на дисплей раз в 5 сек.
   lcdTime = millis();
   if(lcdTime >= (newLcdTime + 4999) or lcdTime <= (newLcdTime - 1000)){
     sensorRead();
@@ -136,14 +134,14 @@ void loop() {
     newLcdTime = lcdTime;
   }
 
-  //Проверяем состояние соединения с Internet раз в 1 минуту
+  // Проверяем состояние соединения с Internet раз в 1 минуту
   connectTime = millis();
   if(connectTime >= (newConnectTime + 60000) or connectTime <= (newConnectTime - 1000)){
    gsm.println("at+xiic?");
    delay(100);
    if (gsm.find("0.0.0.0")){
 
-     // если нет, то подключаемся
+     // Если нет, то подключаемся
      gprsconnect();
      ip = ipRep();
      delay(2000);
@@ -154,7 +152,7 @@ void loop() {
     newConnectTime=connectTime;
    }
 
-  //Отправляем данные на narodmon.ru раз в 5 минут.
+  // Отправляем данные на narodmon.ru раз в 5 минут.
   currentTime = millis();
   if(currentTime >= (loopTime + 299999) or currentTime <= (loopTime -1000)){
     gprssend();
@@ -288,7 +286,7 @@ void gprsconnect(){
 
 }
 
-//Функция определения IP адресса.
+//Функция определения IP адресса----------------------------------------------------------------------------------------------
 
 String ipRep(){
   int idEnd;
@@ -296,38 +294,36 @@ String ipRep(){
   String result;
   boolean stringComplete = false;
   
-  gsm.println("at+xiic?"); // Отправляем запрос в модем
-  delay(200);
-  while (gsm.available()) // если модем ответил
+  gsm.println("at+xiic?");                                // Отправляем запрос в модем
+  delay(300);
+  while (gsm.available())                                 // Проверка наличия данных в порту
   {
-    char inChar = (char)gsm.read(); //заполняем буфер
+    char inChar = (char)gsm.read();                       // Заполняем буфер
     inputString += inChar;
-    if (inChar == '\n') stringComplete = true; // ставим флаг что есть данные
+    if (inChar == '\n') stringComplete = true;            // Ставим флаг что есть данные
   }
   if(stringComplete == true){
-    idEnd = inputString.length() -8 ;
-    result = inputString.substring(15,idEnd); //Записываем с 13-го симво и до конца строки. Это наш IP
-    idEnd = 0;
-    inputString = "";       // очищаем буфер
-    stringComplete = false; // снимаем флаг
+    idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
+    result = inputString.substring(15,idEnd);             //Записываем с 13-го симво и до idEnd. Это наш IP
+    idEnd = 0;                                            // Сбрачываем так как дли ip адреса может измениться при реконекте 
+    inputString = "";                                     // Очищаем буфер
+    stringComplete = false;                               // Снимаем флаг
   }
   return result;
 }
 
-//Функция отправки данных на narodmon.ru
+//Функция отправки данных на narodmon.ru---------------------------------------------------------------------------------------
+
 void gprssend(){
-
-  //Закрываем соединение, на всякий случай
-  gsm.println("AT+TCPCLOSE=0");
-
+  gsm.println("AT+TCPCLOSE=0");                           // Закрываем соединение, на всякий случай
+  
   //В цикле соединяемся с сервером народмон
   while(1){
-    gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");
+    gsm.flush();
+    gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");     // Текущий IP сервера narodmon.ru 94.142.140.101 порт 8283
     delay(2500);
-
-    //Если соединились, выходим из цикла
-    if (gsm.find("+TCPSETUP:0,OK")) break;
-    Serial.println("tcp_err");
+    if (gsm.find("+TCPSETUP:0,OK")) break;                // Если соединились, выходим из цикла
+    Serial.println("tcp_err");                            // Выводим ошибку при отсутствии соединения
 
     //Если нет, проверяем соединины ли с интернетом
     gsm.flush();
@@ -341,7 +337,7 @@ void gprssend(){
     }
   }
     //Собираем данные в кучу для отправки
-    val = "#9512973831000000#Garage.Station\n#H1DHT22#";
+    val = "#9512973831000000#Garage.Station\n#H1DHT22#";  // MAC: 9512973831000000; Name: Garage.Station;
     val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
     val = val + "\n##";
 
@@ -349,12 +345,10 @@ void gprssend(){
   int buff = val.length();
   gsm.print("at+tcpsend=0,");
   gsm.println(buff);
-  delay(100);
+  delay(200);
   gsm.println(val);
   delay(250);
   if (gsm.find("+TCPSEND")) Serial.println("sendOK");
   else Serial.println("sendERROR");
-
-  //Закрываем соединение
-  gsm.println("AT+TCPCLOSE=0");
+  gsm.println("AT+TCPCLOSE=0");                           // Закрываем соединение
 }
