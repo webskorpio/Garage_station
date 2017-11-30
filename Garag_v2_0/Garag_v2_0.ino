@@ -297,7 +297,7 @@ void gprsconnect(){
   // Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    Serial.println("no_ip");
+    if(gsm.find("0.0.0.0")){ Serial.println("no_ip");}
     delay(300);
     gprsIp = 1;                                            //Если нет соединения с Internet гасим диод
     connetError++;
@@ -352,7 +352,7 @@ void gprssend(){
     gsm.flush();
     gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");     // Текущий IP сервера narodmon.ru 94.142.140.101 порт 8283
     delay(2500);
-    if (gsm.find("+TCPSETUP:0,OK")){ break; }             // Если соединились, выходим из цикла
+    if (gsm.find("+TCPSETUP:0,OK")){     Serial.println("test break");   break; }             // Если соединились, выходим из цикла
     Serial.println("tcp_err");                            // Выводим ошибку при отсутствии соединения
 
     //Если нет, проверяем соединины ли с интернетом
