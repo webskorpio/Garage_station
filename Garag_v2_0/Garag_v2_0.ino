@@ -298,7 +298,7 @@ void gprsconnect(){
   // Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    Serial.print("no_ip");
+    Serial.println("no_ip");
     delay(300);
     gprsIp = 1;                                                     //Если нет соединения с Internet гасим диод
     connetError++;
@@ -311,7 +311,7 @@ void gprsconnect(){
     ip = ipRep();
     }else{
     connetError = 0;
-    Serial.print("ok_ip");
+    Serial.println("ok_ip");
     ip = ipRep();
     gprsIp = 0;                                                     // Если соединение установлено зажигаем диод
     }
