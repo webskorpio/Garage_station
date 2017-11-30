@@ -274,13 +274,13 @@ void gprsconnect(){
   //Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    Serial.print("no_ip");
+    Serial.println("no_ip");
     delay(300);
 
     //Если нет соединения с Internet гасим диод
     gprsIp = 0;
   }while(gsm.find("0.0.0.0"));
-    Serial.print("ok_ip");
+    Serial.println("ok_ip");
   //Если соединение установлено зажигаем диод
   gprsIp = 1;
 
