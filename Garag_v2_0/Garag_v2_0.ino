@@ -32,6 +32,7 @@ int errSensor2 = 0;                               // Переменная сос
 int errSensor3 = 0;                               // Переменная состояния датчика 3
 String val;                                       // Переменная с данными для отправки
 String ip;                                        // Переменная текущего IP адресса в сети
+int connetError = 0;                              // Количество попыток реконекта соединения
 
 SoftwareSerial gsm(3, 4);                         // Указываем пины soft UART (RX, TX) 
 LiquidCrystal_I2C lcd(0x27, 16, 2);               // Устанавливаем i2c адресс дисплея
@@ -124,6 +125,11 @@ void setup() {
   lcdPrint();
 }
 
+
+
+//------------------------------------------------------------------------------------------------------------------
+//
+//
 void loop() {
 
   // Вывод данных на дисплей раз в 5 сек.
@@ -143,77 +149,95 @@ void loop() {
 
      // Если нет, то подключаемся
      gprsconnect();
-     ip = ipRep();
      delay(2000);
     }else{
         Serial.print("/");
-        gprsIp = 1;
       }
     newConnectTime=connectTime;
    }
 
-  // Отправляем данные на narodmon.ru раз в 5 минут.
-  currentTime = millis();
-  if(currentTime >= (loopTime + 299999) or currentTime <= (loopTime -1000)){
-    gprssend();
-    loopTime = currentTime;
+  // Отправляем данные на narodmon.ru раз в 5 минут. Если есть соединение 
+  if(gprsIp != 1){
+    currentTime = millis();
+    if(currentTime >= (loopTime + 299999) or currentTime <= (loopTime -1000)){
+      gprssend();
+      loopTime = currentTime;
+    }
   }
 }
+//
+//
+//------------------------------------------------------------------------------------------------------------------
 
-//Функция опроса и подготовки данных на отправку
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Функция опроса и подготовки данных на отправку-------------------------------------------------------------------
 void sensorRead(){
 
-  //Опрос DHT22
+  // Опрос DHT22
   readh1 = dht1.readHumidity(); readt1 = dht1.readTemperature();
   readh2 = dht2.readHumidity(); readt2 = dht2.readTemperature();
   readt3 = dht3.readTemperature();
 
   //Проверяем датчики на "NAN" вместо данных
 
-  //DHT-22 1-й этаж
+    // DHT-22 1-й этаж
   if (isnan(readt1) || isnan(readh1)) {
     //Если ошибки до этого не было ставим флаг 1
     if(errSensor1 == 0){ errSensor1++; }
 
   }else{
-    //Если раньше была ошибка а теперь нет сбрасываем флаг на 0
+    // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor1 != 0){errSensor1 = 0;}
     //Обновляем данные в переменных на новые.
     h1=readh1;
     t1=readt1;
   }
 
-  //DHT-22 подвал
+    // DHT-22 подвал
   if (isnan(readt2) || isnan(readh2)) {
     //Если ошибки до этого не было ставим флаг 1
     if(errSensor2 == 0){ errSensor2++; }
 
   }else{
-    //Если раньше была ошибка а теперь нет сбрасываем флаг на 0
+    // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor2 != 0){errSensor2 = 0;}
     //Обновляем данные в переменных на новые.
     h2=readh2;
     t2=readt2;
   }
 
-    //DHT-22 Улица
+    // DHT-22 Улица
   if (isnan(readt3)) {
     //Если ошибки до этого не было ставим флаг 1
     if(errSensor3 == 0){ errSensor3++; }
 
   }else{
-    //Если раньше была ошибка а теперь нет сбрасываем флаг на 0
+    // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
     if(errSensor3 != 0){errSensor3 = 0;}
     //Обновляем данные в переменных на новые.
     t3=readt3;
   }
 
-    //Проверяем состояние датчиков. Если есть ошибка чтения включаем индикацию
+    // Проверяем состояние датчиков. Если есть ошибка чтения включаем индикацию
     if(errSensor1 != 0) { digitalWrite(STATLED1, HIGH); }else{ digitalWrite(STATLED1, LOW); }
     if(errSensor2 != 0) { digitalWrite(STATLED2, HIGH); }else{ digitalWrite(STATLED2, LOW); }
 
 
-  //Считываем состояние 220В
+  // Считываем состояние 220В
   ac = digitalRead(ACDC);
 
   //Выставляем статус светодиода наличия 220В
@@ -226,7 +250,7 @@ void sensorRead(){
 
 }
 
-//Функция вывода на lcd
+// Функция вывода на lcd-------------------------------------------------------------------------------------------------
 void lcdPrint(){
   if(LCD == 0){
     lcd.clear(); lcd.setCursor(0,0);
@@ -242,7 +266,7 @@ void lcdPrint(){
     lcd.print(h2);
     lcd.print("%");
 
-    //Переходим на следующую страницу дисплея
+    // Переходим на следующую страницу дисплея
     LCD++;
     }else{
       lcd.clear(); lcd.setCursor(0,0);
@@ -252,15 +276,15 @@ void lcdPrint(){
       lcd.print(!ac);
       lcd.setCursor(0,1);
       lcd.print(ip);
-      //Сбрасываем на 1 страницу отображения
+      // Сбрасываем на 1 страницу отображения
       LCD = 0;
     }
 }
 
-//Функция соединения с интернетом
+// Функция соединения с интернетом-----------------------------------------------------------------------------------------
 void gprsconnect(){
 
-  // включаем РРР
+  // dключаем РРР
   gsm.println("AT+XISP=0");
   delay(100);
   //Настраиваем соединение
@@ -271,19 +295,26 @@ void gprsconnect(){
   gsm.println("at+xiic=1");
   delay(100);
 
-  //Проверяем выдали ли нам IP
+  // Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
     Serial.print("no_ip");
     delay(300);
+    gprsIp = 1;                                                     //Если нет соединения с Internet гасим диод
+    connetError++;
+  }while(gsm.find("0.0.0.0") and connetError != 9);
 
-    //Если нет соединения с Internet гасим диод
-    gprsIp = 0;
-  }while(gsm.find("0.0.0.0"));
+  if(connetError == 9){
+    connetError = 0;
+    Serial.println("The number of attempts to obtain IP has been exhausted.");
+    Serial.println("Reconnecting");
+    ip = ipRep();
+    }else{
+    connetError = 0;
     Serial.print("ok_ip");
-  //Если соединение установлено зажигаем диод
-  gprsIp = 1;
-
+    ip = ipRep();
+    gprsIp = 0;                                                     // Если соединение установлено зажигаем диод
+    }
 }
 
 //Функция определения IP адресса----------------------------------------------------------------------------------------------
