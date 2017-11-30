@@ -83,7 +83,7 @@ void setup() {
   // Проверяем готовность модема
   do{
      gsm.println("AT+CPAS");
-     Serial.print(".");
+     Serial.print("!");
      delay(100);
      }while(!gsm.find("0"));
      
@@ -274,13 +274,13 @@ void gprsconnect(){
   //Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    Serial.print(".");
+    Serial.print("no_ip");
     delay(300);
 
     //Если нет соединения с Internet гасим диод
     gprsIp = 0;
   }while(gsm.find("0.0.0.0"));
-
+    Serial.print("ok_ip");
   //Если соединение установлено зажигаем диод
   gprsIp = 1;
 
