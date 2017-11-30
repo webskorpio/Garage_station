@@ -120,7 +120,6 @@ void setup() {
   delay(1000);
   lcd.setCursor(0,1);
   lcd.print("  START SYSTEM  ");
-  ip = ipRep(); // определяем наш IP
   sensorRead();
   lcdPrint();
 }
