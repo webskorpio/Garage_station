@@ -297,9 +297,9 @@ void gprsconnect(){
   // Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    if(gsm.find("0.0.0.0")){ Serial.println("no_ip");}
+    Serial.println("no_ip");
     delay(300);
-    gprsIp = 1;                                            //Если нет соединения с Internet гасим диод
+    gprsIp = 1;                                                     //Если нет соединения с Internet гасим диод
     connetError++;
   }while(gsm.find("0.0.0.0") and connetError != 9);
 
@@ -312,7 +312,7 @@ void gprsconnect(){
     connetError = 0;
     Serial.println("ok_ip");
     ip = ipRep();
-    gprsIp = 0;                                           // Если соединение установлено зажигаем диод
+    gprsIp = 0;                                                     // Если соединение установлено зажигаем диод
     }
 }
 
@@ -334,7 +334,7 @@ String ipRep(){
   }
   if(stringComplete == true){
     idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
-    result = inputString.substring(15,idEnd);             // Записываем с 13-го симво и до idEnd. Это наш IP
+    result = inputString.substring(15,idEnd);             //Записываем с 13-го симво и до idEnd. Это наш IP
     idEnd = 0;                                            // Сбрачываем так как дли ip адреса может измениться при реконекте 
     inputString = "";                                     // Очищаем буфер
     stringComplete = false;                               // Снимаем флаг
@@ -352,7 +352,7 @@ void gprssend(){
     gsm.flush();
     gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");     // Текущий IP сервера narodmon.ru 94.142.140.101 порт 8283
     delay(2500);
-    if (gsm.find("+TCPSETUP:0,OK")){     Serial.println("test break");   break; }             // Если соединились, выходим из цикла
+    if (gsm.find("+TCPSETUP:0,OK")) break;                // Если соединились, выходим из цикла
     Serial.println("tcp_err");                            // Выводим ошибку при отсутствии соединения
 
     //Если нет, проверяем соединины ли с интернетом
@@ -360,8 +360,10 @@ void gprssend(){
     gsm.println("at+xiic?");
     delay(100);
     if (gsm.find("0.0.0.0")){
+
       //Если нет, то подключаемся
       gprsconnect();
+      delay(2000);
     }
   }
     //Собираем данные в кучу для отправки
