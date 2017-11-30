@@ -300,16 +300,6 @@ void gprsconnect(){
     gsm.println("at+xiic?");
     Serial.println("no_ip");
     delay(300);
-<<<<<<< HEAD
-
-    //Если нет соединения с Internet гасим диод
-    gprsIp = 0;
-  }while(gsm.find("0.0.0.0"));
-    Serial.println("ok_ip");
-  //Если соединение установлено зажигаем диод
-  gprsIp = 1;
-
-=======
     gprsIp = 1;                                                     //Если нет соединения с Internet гасим диод
     connetError++;
   }while(gsm.find("0.0.0.0") and connetError != 9);
@@ -325,7 +315,6 @@ void gprsconnect(){
     ip = ipRep();
     gprsIp = 0;                                                     // Если соединение установлено зажигаем диод
     }
->>>>>>> 86b5230592ef26850b787d49628778a12f70815b
 }
 
 //Функция определения IP адресса----------------------------------------------------------------------------------------------
