@@ -141,8 +141,8 @@ void loop() {
   if(connectTime >= (newConnectTime + 60000) or connectTime <= (newConnectTime - 1000)){
    gsm.println("at+xiic?");
    delay(100);
-   if (gsm.find("0.0.0.0"))
-     gprsconnect();                                                                                    // Если нет, то подключаемся
+   if (gsm.find("0.0.0.0")){
+     gprsconnect();                                                                                   // Если нет, то подключаемся
      delay(2000);
     }else{
         Serial.print("/");
@@ -246,7 +246,7 @@ void gprsconnect(){
   // Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    Serial.println("no_ip");
+    if(connetError != 0) { Serial.println("no_ip"); }
     delay(300);
     gprsIp = 1;                                                     //Если нет соединения с Internet гасим диод
     connetError++;
