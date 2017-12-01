@@ -72,8 +72,8 @@ void setup() {
   digitalWrite(STATLED1, LOW);
   digitalWrite(STATLED1, LOW);
 
-  //Проверяем состояние 220В и ыставляем индикацию зависимости от состояния
-  ac = digitalRead(ACDC);
+  ac = digitalRead(ACDC);                                  //Проверяем состояние 220В и ыставляем индикацию зависимости от состояния
+  
   if(ac == LOW) {digitalWrite(LED220, HIGH);}else{digitalWrite(LED220, LOW);}
 
   // Поэтапный запуск системы:
@@ -134,20 +134,15 @@ void loop() {
   // Вывод данных на дисплей раз в 5 сек.
   lcdTime = millis();
   if(lcdTime >= (newLcdTime + 4999) or lcdTime <= (newLcdTime - 1000)){
-    sensorRead();
-    lcdPrint();
-    newLcdTime = lcdTime;
+    sensorRead(); lcdPrint(); newLcdTime = lcdTime;
   }
-
   // Проверяем состояние соединения с Internet раз в 1 минуту
   connectTime = millis();
   if(connectTime >= (newConnectTime + 60000) or connectTime <= (newConnectTime - 1000)){
    gsm.println("at+xiic?");
    delay(100);
-   if (gsm.find("0.0.0.0")){
-
-     // Если нет, то подключаемся
-     gprsconnect();
+   if (gsm.find("0.0.0.0"))
+     gprsconnect();                                                                                    // Если нет, то подключаемся
      delay(2000);
     }else{
         Serial.print("/");
@@ -155,7 +150,6 @@ void loop() {
       }
     newConnectTime=connectTime;
    }
-
   // Отправляем данные на narodmon.ru раз в 5 минут. Если есть соединение 
   if(gprsIp != 1){
     currentTime = millis();
@@ -174,16 +168,6 @@ void loop() {
 
 
 
-
-
-
-
-
-
-
-
-
-
 // Функция опроса и подготовки данных на отправку-------------------------------------------------------------------
 void sensorRead(){
 
@@ -192,59 +176,37 @@ void sensorRead(){
   readh2 = dht2.readHumidity(); readt2 = dht2.readTemperature();
   readt3 = dht3.readTemperature();
 
-  //Проверяем датчики на "NAN" вместо данных
+  // Проверяем датчики на "NAN" вместо данных
 
-    // DHT-22 1-й этаж
+    // DHT-22 1-й этаж //
   if (isnan(readt1) || isnan(readh1)) {
-    //Если ошибки до этого не было ставим флаг 1
-    if(errSensor1 == 0){ errSensor1++; }
-
+    if(errSensor1 == 0){ errSensor1++; }                                                               // Если ошибки до этого не было ставим флаг 1
   }else{
-    // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
-    if(errSensor1 != 0){errSensor1 = 0;}
-    //Обновляем данные в переменных на новые.
-    h1=readh1;
-    t1=readt1;
+    if(errSensor1 != 0){errSensor1 = 0;}                                                               // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
+    h1=readh1; t1=readt1;                                                                              // Обновляем данные в переменных на новые.
   }
-
-    // DHT-22 подвал
+    // DHT-22 подвал //
   if (isnan(readt2) || isnan(readh2)) {
-    //Если ошибки до этого не было ставим флаг 1
-    if(errSensor2 == 0){ errSensor2++; }
-
+    if(errSensor2 == 0){ errSensor2++; }                                                               // Если ошибки до этого не было ставим флаг 1
   }else{
-    // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
-    if(errSensor2 != 0){errSensor2 = 0;}
-    //Обновляем данные в переменных на новые.
-    h2=readh2;
-    t2=readt2;
+    if(errSensor2 != 0){errSensor2 = 0;}                                                               // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
+    h2=readh2; t2=readt2;                                                                              // Обновляем данные в переменных на новые.
   }
-
-    // DHT-22 Улица
+    // DHT-22 Улица //
   if (isnan(readt3)) {
-    //Если ошибки до этого не было ставим флаг 1
-    if(errSensor3 == 0){ errSensor3++; }
-
+    if(errSensor3 == 0){ errSensor3++; }                                                               // Если ошибки до этого не было ставим флаг 1
   }else{
-    // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
-    if(errSensor3 != 0){errSensor3 = 0;}
-    //Обновляем данные в переменных на новые.
-    t3=readt3;
+    if(errSensor3 != 0){errSensor3 = 0;}                                                               // Если раньше была ошибка а теперь нет сбрасываем флаг на 0
+    t3=readt3;                                                                                         // Обновляем данные в переменных на новые.
   }
 
     // Проверяем состояние датчиков. Если есть ошибка чтения включаем индикацию
-    if(errSensor1 != 0) { digitalWrite(STATLED1, HIGH); }else{ digitalWrite(STATLED1, LOW); }
-    if(errSensor2 != 0) { digitalWrite(STATLED2, HIGH); }else{ digitalWrite(STATLED2, LOW); }
+  if(errSensor1 != 0) { digitalWrite(STATLED1, HIGH); }else{ digitalWrite(STATLED1, LOW); }
+  if(errSensor2 != 0) { digitalWrite(STATLED2, HIGH); }else{ digitalWrite(STATLED2, LOW); }
 
-
-  // Считываем состояние 220В
-  ac = digitalRead(ACDC);
-
-  //Выставляем статус светодиода наличия 220В
-  if(ac == HIGH) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }
-
-  //Выставляем статус светодиода наличия соединения с Internet
-  if (gprsIp == 0){ digitalWrite(LEDGPRS, LOW); }else{ digitalWrite(LEDGPRS, HIGH); }
+  ac = digitalRead(ACDC);                                                                               // Считываем состояние 220В
+  if(ac == HIGH) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }                      // Выставляем статус светодиода наличия 220В
+  if (gprsIp == 0){ digitalWrite(LEDGPRS, LOW); }else{ digitalWrite(LEDGPRS, HIGH); }                   // Выставляем статус светодиода наличия соединения с Internet
 
 
 
@@ -254,30 +216,16 @@ void sensorRead(){
 void lcdPrint(){
   if(LCD == 0){
     lcd.clear(); lcd.setCursor(0,0);
-    lcd.print("1T");
-    lcd.print(t1);
-    lcd.print("C H");
-    lcd.print(h1);
-    lcd.print("%");
+    lcd.print("1T");    lcd.print(t1);    lcd.print("C H");    lcd.print(h1);    lcd.print("%");        // Температура и влажность на первом этаже
     lcd.setCursor(0,1);
-    lcd.print("2T");
-    lcd.print(t2);
-    lcd.print("C H");
-    lcd.print(h2);
-    lcd.print("%");
-
-    // Переходим на следующую страницу дисплея
-    LCD++;
+    lcd.print("2T");    lcd.print(t2);    lcd.print("C H");    lcd.print(h2);    lcd.print("%");        // Температура и влажность в подвале
+    LCD++;                                                                                              // Переходим на следующую страницу дисплея
     }else{
       lcd.clear(); lcd.setCursor(0,0);
-      lcd.print("3T");
-      lcd.print(t3);
-      lcd.print("C    AC:");
-      lcd.print(!ac);
+      lcd.print("3T");      lcd.print(t3);      lcd.print("C    AC:");      lcd.print(!ac);             // Температура на улице и наличие 220V
       lcd.setCursor(0,1);
-      lcd.print(ip);
-      // Сбрасываем на 1 страницу отображения
-      LCD = 0;
+      lcd.print(ip);                                                                                    // Текущий IP адресс устройства
+      LCD = 0;                                                                                          // Сбрасываем на 1 страницу отображения
     }
 }
 
