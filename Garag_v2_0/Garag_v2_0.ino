@@ -151,7 +151,7 @@ void loop() {
      delay(2000);
     }else{
         Serial.print("/");
-        gprsIp = 1;
+        gprsIp = 0;
       }
     newConnectTime=connectTime;
    }
