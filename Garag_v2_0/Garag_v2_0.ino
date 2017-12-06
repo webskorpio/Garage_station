@@ -104,7 +104,7 @@ void setup() {
      gsm.println("AT+CPAS");
      Serial.print("!");
      delay(100);
-     }while(!gsm.find("0"));
+     }while(!gsm.find('0'));
      
   delay(1000);
   lcd.print("OK");
@@ -118,7 +118,7 @@ void setup() {
      gsm.println("AT+CREG?");
      Serial.print(":");
      delay(100);
-      }while(!gsm.find("+CREG: 0,1"));
+      }while(!gsm.find('+CREG: 0,1'));
       
   delay(1000);
   lcd.print("OK");
@@ -178,7 +178,7 @@ void loop() {
     }
   }
   // Проверяем Serial на наличие AT команд
-  serialCommad();
+  //serialCommad();
 }
 //
 //
@@ -363,7 +363,7 @@ void serialCommad(){
   
   while (Serial.available())                                  // Проверка наличия данных в порту
   {                                 
-    char inChar = (char)Serial.read();                        // Заполняем буфер
+   char inChar = (char)Serial.read();                        // Заполняем буфер
     delay(10);
     input += inChar;
     if (inChar == '\n') stringComplete = true;                // Ставим флаг что есть данные
