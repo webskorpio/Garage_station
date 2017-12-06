@@ -371,6 +371,7 @@ void serialCommad(){
   Serial.println(comm);
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
+  Serial.flush();
  /*     
   if (Serial.find("AT+CCLK="))
   idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
