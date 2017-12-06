@@ -370,10 +370,8 @@ void serialCommad(){
     idEnd = inputString.length() ;      
     comm = inputString.substring(3,8);
     com = inputString.substring(0,3);
-    Serial.println(comm);
-    Serial.println(com);
     if(com == "AT+"){
-      if(comm == "CCLK="){ Serial.println("Set time");}
+      if(comm == "CCLK="){ Serial.println(time.gettime("y/m/d,H:i:s"));}
       if(comm == "CCLK?"){ Serial.println("Get time");}
     }
     
