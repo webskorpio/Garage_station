@@ -354,7 +354,7 @@ void gprssend(){
 
 void serialCommad(){
   
-  char inputString;
+  String inputString;
   boolean stringComplete = false;
   String comm;
   
@@ -365,10 +365,10 @@ void serialCommad(){
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  //comm = inputString.substring();
+  comm = inputString.substring(1);
   delay(100);
   Serial.println("OK");
-  Serial.println(inputString);
+  Serial.println(comm);
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
  /*     
