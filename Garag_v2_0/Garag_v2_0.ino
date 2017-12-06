@@ -364,7 +364,8 @@ void serialCommad(){
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
   String comm = inputString.substring(0,7);
-  Serial.println("com");
+  Serial.println("OK");
+  Serial.println(comm);
  /*     
   if (Serial.find("AT+CCLK="))
   idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
