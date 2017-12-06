@@ -356,7 +356,7 @@ void serialCommad(){
   
   String inputString;
   boolean stringComplete = false;
-  String comm
+  String comm;
   while (Serial.available()){                                 // Проверка наличия данных в порту
     char inChar = (char)Serial.read();                        // Заполняем буфер
     inputString += inChar;
