@@ -374,7 +374,7 @@ void serialCommad(){
     com = inputString.substring(0,3);
     if(com == "AT+"){
       if(comm == "CCLK="){ Serial.println("Set time");}
-      if(comm == "CCLK?"){ Serial.println(time.gettime("y/m/d,H:i:s"));}
+ //     if(comm == "CCLK?"){ Serial.println(time.gettime("y/m/d,H:i:s"));}
       if(comm == "SEND="){ if(gprsIp != 1){ currentTime = millis(); Serial.println("Send date the narodmon.ru"); gprssend(); loopTime = currentTime; }else{Serial.println("No Internet connecting");}}
     }
     
