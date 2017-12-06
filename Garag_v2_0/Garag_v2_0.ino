@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include <LiquidCrystal_I2C.h>
-#include <iarduino_RTC.h>  
+//#include <iarduino_RTC.h>  
 #include <DHT.h>
 #include <Wire.h>
 
@@ -35,7 +35,7 @@ String val;                                       // Переменная с д�
 String ip;                                        // Переменная текущего IP адресса в сети
 int connetError = 0;                              // Количество попыток реконекта соединения
 
-iarduino_RTC time(RTC_DS1307);                    // Объявляем объект time для работы с RTC модулем на базе чипа DS1307, используется аппаратная шина I2C
+//iarduino_RTC time(RTC_DS1307);                    // Объявляем объект time для работы с RTC модулем на базе чипа DS1307, используется аппаратная шина I2C
 SoftwareSerial gsm(3, 4);                         // Указываем пины soft UART (RX, TX) 
 LiquidCrystal_I2C lcd(0x27, 16, 2);               // Устанавливаем i2c адресс дисплея
 
@@ -55,7 +55,7 @@ void setup() {
   dht2.begin();
   dht3.begin();
   lcd.begin(); lcd.backlight();                           // Иницилизируем дисплей
-  time.begin();                                           // Инициируем DS1307
+//  time.begin();                                           // Инициируем DS1307
 //  Функция settime(секунды [, минуты [, часы [, день [, месяц [, год [, день недели]]]]]]):
 //      записывает время в модуль
 //      год указывается без учёта века, в формате 0-99
@@ -66,7 +66,7 @@ void setup() {
 //      пример: time.settime(0, 5, 13); установит 13 часов, 5 минут, 0 секунд, а дату оставит без изменений
 //      пример: time.settime(-1, -1, -1, 9, 2, 17); установит дату 09.02.2017 , а время и день недели оставит без изменений
 
-  Serial.println(time.gettime("Y/m/d,H:i:s+3"));          // +3 возможно не верно
+ // Serial.println(time.gettime("Y/m/d,H:i:s+3"));          // +3 возможно не верно
 
   //Cчитываем время, прошедшее с момента запуска программы
   connectTime = millis(); newConnectTime = connectTime;   // Проверка состояния соединения
@@ -173,7 +173,7 @@ void loop() {
     }
   }
   // Проверяем Serial на наличие AT команд
-  serialCommad();
+ // serialCommad();
 }
 //
 //
@@ -318,7 +318,9 @@ void gprssend(){
     gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");     // Текущий IP сервера narodmon.ru 94.142.140.101 порт 8283
     delay(2500);
     if (gsm.find("+TCPSETUP:0,OK")) break;                // Если соединились, выходим из цикла
-    if (gsm.find("+TCPSETUP:0,FAIL") or gsm.find("+TCPSETUP:Error 2")) Serial.println("tcp_err");  // Выводим ошибку при отсутствии соединения
+    delay(300);
+    Serial.println("tcp_err"); 
+    //   if (gsm.find("+TCPSETUP:0,FAIL") or gsm.find("+TCPSETUP:Error 2")) Serial.println("tcp_err");  // Выводим ошибку при отсутствии соединения
                                
     //Если нет, проверяем соединины ли с интернетом
     gsm.flush();
@@ -348,7 +350,7 @@ void gprssend(){
   gsm.println("AT+TCPCLOSE=0");                           // Закрываем соединение
 }
 
-
+/*
 //Функция чтения команд из Serial port----------------------------------------------------------------------------------------
 
 void serialCommad(){
@@ -372,20 +374,20 @@ void serialCommad(){
     if(com == "AT+"){
       if(comm == "CCLK="){ Serial.println("Set time");}
       if(comm == "CCLK?"){ Serial.println(time.gettime("y/m/d,H:i:s"));}
-      if(comm == "SEND="){ if(gprsIp != 1){ currentTime = millis(); gprssend(); loopTime = currentTime; }else{Serial.println("No Internet connecting");}}
+      if(comm == "SEND="){ if(gprsIp != 1){ currentTime = millis(); Serial.println("Send date the narodmon.ru"); gprssend(); loopTime = currentTime; }else{Serial.println("No Internet connecting");}}
     }
     
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
   Serial.flush();
- /*     
+     
   if (Serial.find("AT+CCLK="))
   idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
   result = inputString.substring(15,idEnd);             //Записываем с 13-го симво и до idEnd. Это наш IP
   idEnd = 0;                                            // Сбрачываем так как дли ip адреса может измениться при реконекте 
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
-  */
+  
   }
 }
-
+*/
