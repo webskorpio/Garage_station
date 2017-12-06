@@ -353,7 +353,7 @@ void gprssend(){
 //Функция чтения команд из Serial port----------------------------------------------------------------------------------------
 
 void serialCommad(){
-  
+  int idEnd = 0;
   String inputString;
   boolean stringComplete = false;
   String comm;
@@ -366,7 +366,8 @@ void serialCommad(){
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  comm = inputString.substring(-1,8);
+  idEnd = inputString.length() ;      
+  comm = inputString.substring(0,idEnd);
   delay(100);
   Serial.println("OK");
   Serial.println(comm);
