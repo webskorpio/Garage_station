@@ -360,8 +360,9 @@ void serialCommad(){
   boolean stringComplete = false;
   String comm;
   String com;
-  
-  while (Serial.available()){                                 // Проверка наличия данных в порту
+  /*
+  while (Serial.available())                                  // Проверка наличия данных в порту
+  {                                 
     char inChar = (char)Serial.read();                        // Заполняем буфер
     delay(10);
     inputString += inChar;
@@ -382,5 +383,6 @@ void serialCommad(){
   stringComplete = false;                               // Снимаем флаг
   
   }
+  */
 }
 
