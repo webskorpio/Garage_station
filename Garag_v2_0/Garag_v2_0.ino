@@ -354,7 +354,7 @@ void gprssend(){
 
 void serialCommad(){
   
-  String inputString;
+  char inputString;
   boolean stringComplete = false;
   String comm;
   
