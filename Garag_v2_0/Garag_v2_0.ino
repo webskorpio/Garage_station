@@ -364,7 +364,7 @@ void serialCommad(){
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  comm = inputString.substring(0,7);
+  comm = inputString.substring(0,6);
   Serial.println("OK");
   Serial.println(comm);
   inputString = "";                                     // Очищаем буфер
