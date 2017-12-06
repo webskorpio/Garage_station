@@ -356,6 +356,7 @@ void serialCommad(){
   
   String inputString;
   boolean stringComplete = false;
+  String comm;
   while (Serial.available()){                                 // Проверка наличия данных в порту
     char inChar = (char)Serial.read();                        // Заполняем буфер
     inputString += inChar;
@@ -363,9 +364,11 @@ void serialCommad(){
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  String comm = inputString.substring(0,7);
+  comm = inputString.substring(0,6);
   Serial.println("OK");
   Serial.println(comm);
+  inputString = "";                                     // Очищаем буфер
+  stringComplete = false;                               // Снимаем флаг
  /*     
   if (Serial.find("AT+CCLK="))
   idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
