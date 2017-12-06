@@ -34,6 +34,7 @@ int errSensor3 = 0;                               // Переменная сос
 String val;                                       // Переменная с данными для отправки
 String ip;                                        // Переменная текущего IP адресса в сети
 int connetError = 0;                              // Количество попыток реконекта соединения
+boolean stringComplete = false;
 
 //iarduino_RTC time(RTC_DS1307);                    // Объявляем объект time для работы с RTC модулем на базе чипа DS1307, используется аппаратная шина I2C
 SoftwareSerial gsm(3, 4);                         // Указываем пины soft UART (RX, TX) 
@@ -287,7 +288,6 @@ String ipRep(){
   int idEnd;
   String inputString;
   String result;
-  boolean stringComplete = false;
   
   gsm.println("at+xiic?");                                // Отправляем запрос в модем
   delay(300);
@@ -355,9 +355,7 @@ void gprssend(){
 //Функция чтения команд из Serial port----------------------------------------------------------------------------------------
 
 void serialCommad(){
-  int idEnd = 0;
   String inputString;
-  boolean stringComplete = false;
   String comm;
   String com;
   /*
