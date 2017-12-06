@@ -174,7 +174,7 @@ void loop() {
     }
   }
   // Проверяем Serial на наличие AT команд
-  serialCommad();
+ // serialCommad();
 }
 //
 //
@@ -355,32 +355,31 @@ void gprssend(){
 //Функция чтения команд из Serial port----------------------------------------------------------------------------------------
 
 void serialCommad(){
-  String inputString;
+  String input;
   String comm;
   String com;
-  /*
+  
   while (Serial.available())                                  // Проверка наличия данных в порту
   {                                 
     char inChar = (char)Serial.read();                        // Заполняем буфер
     delay(10);
-    inputString += inChar;
+    input += inChar;
     if (inChar == '\n') stringComplete = true;                // Ставим флаг что есть данные
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-    idEnd = inputString.length() ;      
-    comm = inputString.substring(3,8);
-    com = inputString.substring(0,3);
+    comm = input.substring(3,8);
+    com = input.substring(0,3);
     if(com == "AT+"){
       if(comm == "CCLK="){ Serial.println("Set time");}
  //     if(comm == "CCLK?"){ Serial.println(time.gettime("y/m/d,H:i:s"));}
       if(comm == "SEND="){ if(gprsIp != 1){ currentTime = millis(); Serial.println("Send date the narodmon.ru"); gprssend(); loopTime = currentTime; }else{Serial.println("No Internet connecting");}}
     }
     
-  inputString = "";                                     // Очищаем буфер
+  input = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
   
   }
-  */
+  
 }
 
