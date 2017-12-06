@@ -357,6 +357,7 @@ void serialCommad(){
   String inputString;
   boolean stringComplete = false;
   String comm;
+  String com;
   
   while (Serial.available()){                                 // Проверка наличия данных в порту
     char inChar = (char)Serial.read();                        // Заполняем буфер
@@ -366,11 +367,16 @@ void serialCommad(){
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  idEnd = inputString.length() ;      
-  comm = inputString.substring(0,7);
-  delay(100);
-  Serial.println("OK");
-  Serial.println(comm);
+    idEnd = inputString.length() ;      
+    comm = inputString.substring(3,8);
+    com = inputString.substring(0,2);
+    Serial.println(comm);
+    Serial.println(com);
+    if(com == "AT+"){
+      if(comm == "AT+CCLK="){ Serial.println("Set time");}
+      if(comm == "AT+CCLK?"){ Serial.println("Get time");}
+    }
+    
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
   Serial.flush();
