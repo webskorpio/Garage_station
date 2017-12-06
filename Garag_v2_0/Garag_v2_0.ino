@@ -360,12 +360,13 @@ void serialCommad(){
   
   while (Serial.available()){                                 // Проверка наличия данных в порту
     char inChar = (char)Serial.read();                        // Заполняем буфер
+    delay(10);
     inputString += inChar;
     if (inChar == '\n') stringComplete = true;                // Ставим флаг что есть данные
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  comm = inputString.substring(1);
+  comm = inputString.substring(1,5);
   delay(100);
   Serial.println("OK");
   Serial.println(comm);
