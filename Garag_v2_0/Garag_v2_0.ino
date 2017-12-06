@@ -365,10 +365,10 @@ void serialCommad(){
   }
   
   if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-  comm = inputString.substring(0);
+  //comm = inputString.substring();
   delay(100);
   Serial.println("OK");
-  Serial.println(comm);
+  Serial.println(inputString);
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
  /*     
