@@ -137,6 +137,7 @@ void setup() {
   lcd.print("  START SYSTEM  ");
   sensorRead();
   lcdPrint();
+  gprssend();
 }
 
 
@@ -174,7 +175,7 @@ void loop() {
     }
   }
   // Проверяем Serial на наличие AT команд
- // serialCommad();
+  serialCommad();
 }
 //
 //
