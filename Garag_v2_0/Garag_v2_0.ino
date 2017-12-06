@@ -173,7 +173,7 @@ void loop() {
     }
   }
   // Проверяем Serial на наличие AT команд
- // serialCommad();
+  serialCommad();
 }
 //
 //
@@ -294,6 +294,7 @@ String ipRep(){
   while (gsm.available())                                 // Проверка наличия данных в порту
   {
     char inChar = (char)gsm.read();                       // Заполняем буфер
+    delay(10);
     inputString += inChar;
     if (inChar == '\n') stringComplete = true;            // Ставим флаг что есть данные
   }
@@ -350,7 +351,7 @@ void gprssend(){
   gsm.println("AT+TCPCLOSE=0");                           // Закрываем соединение
 }
 
-/*
+
 //Функция чтения команд из Serial port----------------------------------------------------------------------------------------
 
 void serialCommad(){
@@ -379,15 +380,7 @@ void serialCommad(){
     
   inputString = "";                                     // Очищаем буфер
   stringComplete = false;                               // Снимаем флаг
-  Serial.flush();
-     
-  if (Serial.find("AT+CCLK="))
-  idEnd = inputString.length() -8 ;                     // Определяем до какого символа считывать из строки
-  result = inputString.substring(15,idEnd);             //Записываем с 13-го симво и до idEnd. Это наш IP
-  idEnd = 0;                                            // Сбрачываем так как дли ip адреса может измениться при реконекте 
-  inputString = "";                                     // Очищаем буфер
-  stringComplete = false;                               // Снимаем флаг
   
   }
 }
-*/
+
