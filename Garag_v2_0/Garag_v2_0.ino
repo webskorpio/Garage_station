@@ -1,6 +1,5 @@
 #include <SoftwareSerial.h>
 #include <LiquidCrystal_I2C.h>
-//#include <iarduino_RTC.h>  
 #include <DHT.h>
 #include <Wire.h>
 
@@ -34,12 +33,8 @@ int errSensor3 = 0;                               // Переменная сос
 String val;                                       // Переменная с данными для отправки
 String ip;                                        // Переменная текущего IP адресса в сети
 int connetError = 0;                              // Количество попыток реконекта соединения
-boolean stringComplete = false;
-  String input;
-  String comm;
-  String com;
+bool stringComplete = false;
 
-//iarduino_RTC time(RTC_DS1307);                    // Объявляем объект time для работы с RTC модулем на базе чипа DS1307, используется аппаратная шина I2C
 SoftwareSerial gsm(3, 4);                         // Указываем пины soft UART (RX, TX) 
 LiquidCrystal_I2C lcd(0x27, 16, 2);               // Устанавливаем i2c адресс дисплея
 
@@ -52,6 +47,9 @@ DHT dht3(DHTPIN3, DHT22);
 // Старт программы------------------------------------------------------------------------------------
 
 void setup() {
+
+
+String at;
   
   Serial.begin(19200);
   gsm.begin(19200);
@@ -59,18 +57,6 @@ void setup() {
   dht2.begin();
   dht3.begin();
   lcd.begin(); lcd.backlight();                           // Иницилизируем дисплей
-//  time.begin();                                           // Инициируем DS1307
-//  Функция settime(секунды [, минуты [, часы [, день [, месяц [, год [, день недели]]]]]]):
-//      записывает время в модуль
-//      год указывается без учёта века, в формате 0-99
-//      часы указываются в 24-часовом формате, от 0 до 23
-//      день недели указывается в виде числа: 0-воскресенье, 1-понедельник, 2-вторник ..., 6-суббота
-//      если предыдущий параметр надо оставить без изменений, то можно указать отрицательное или заведомо большее значение
-//      пример: time.settime(-1, 10); установит 10 минут, а секунды, часы и дату, оставит без изменений
-//      пример: time.settime(0, 5, 13); установит 13 часов, 5 минут, 0 секунд, а дату оставит без изменений
-//      пример: time.settime(-1, -1, -1, 9, 2, 17); установит дату 09.02.2017 , а время и день недели оставит без изменений
-
- // Serial.println(time.gettime("Y/m/d,H:i:s+3"));          // +3 возможно не верно
 
   //Cчитываем время, прошедшее с момента запуска программы
   connectTime = millis(); newConnectTime = connectTime;   // Проверка состояния соединения
@@ -177,8 +163,6 @@ void loop() {
       loopTime = currentTime;
     }
   }
-  // Проверяем Serial на наличие AT команд
-  //serialCommad();
 }
 //
 //
@@ -292,6 +276,7 @@ String ipRep(){
   int idEnd;
   String inputString;
   String result;
+
   
   gsm.println("at+xiic?");                                // Отправляем запрос в модем
   delay(300);
@@ -322,7 +307,7 @@ void gprssend(){
     gsm.flush();
     gsm.println("AT+TCPSETUP=0,94.142.140.101,8283");     // Текущий IP сервера narodmon.ru 94.142.140.101 порт 8283
     delay(2500);
-    if (gsm.find("+TCPSETUP:0,OK")) break;                // Если соединились, выходим из цикла
+    if (gsm.find('+TCPSETUP:0,OK')) break;                // Если соединились, выходим из цикла
     delay(300);
     Serial.println("tcp_err"); 
     //   if (gsm.find("+TCPSETUP:0,FAIL") or gsm.find("+TCPSETUP:Error 2")) Serial.println("tcp_err");  // Выводим ошибку при отсутствии соединения
@@ -356,32 +341,5 @@ void gprssend(){
 }
 
 
-//Функция чтения команд из Serial port----------------------------------------------------------------------------------------
 
-void serialCommad(){
-
-  
-  while (Serial.available())                                  // Проверка наличия данных в порту
-  {                                 
-   char inChar = (char)Serial.read();                        // Заполняем буфер
-    delay(10);
-    input += inChar;
-    if (inChar == '\n') stringComplete = true;                // Ставим флаг что есть данные
-  }
-  
-  if(stringComplete == true){                                 // Если данные есть проверяем на наличие команд
-    comm = input.substring(3,8);
-    com = input.substring(0,3);
-    if(com == "AT+"){
-      if(comm == "CCLK="){ Serial.println("Set time");}
- //     if(comm == "CCLK?"){ Serial.println(time.gettime("y/m/d,H:i:s"));}
-      if(comm == "SEND="){ if(gprsIp != 1){ currentTime = millis(); Serial.println("Send date the narodmon.ru"); gprssend(); loopTime = currentTime; }else{Serial.println("No Internet connecting");}}
-    }
-    
-  input = "";                                     // Очищаем буфер
-  stringComplete = false;                               // Снимаем флаг
-  
-  }
-  
-}
 
