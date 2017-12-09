@@ -126,7 +126,6 @@ String at;
   lcd.print("  START SYSTEM  ");
   sensorRead();
   lcdPrint();
-  gprssend();
 }
 
 
@@ -210,7 +209,7 @@ void sensorRead(){
   if(errSensor2 != 0) { digitalWrite(STATLED2, HIGH); }else{ digitalWrite(STATLED2, LOW); }
 
   ac = digitalRead(ACDC);                                                                               // Считываем состояние 220В
-  if(ac == HIGH) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }                      // Выставляем статус светодиода наличия 220В
+  if(ac == LOW) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }                      // Выставляем статус светодиода наличия 220В
   if (gprsIp == 0){ digitalWrite(LEDGPRS, LOW); }else{ digitalWrite(LEDGPRS, HIGH); }                   // Выставляем статус светодиода наличия соединения с Internet
 
 
@@ -227,7 +226,7 @@ void lcdPrint(){
     LCD++;                                                                                              // Переходим на следующую страницу дисплея
     }else{
       lcd.clear(); lcd.setCursor(0,0);
-      lcd.print("3T");      lcd.print(t3);      lcd.print("C    AC:");      lcd.print(!ac);             // Температура на улице и наличие 220V
+      lcd.print("3T");      lcd.print(t3);      lcd.print("C    AC:");      lcd.print(ac);              // Температура на улице и наличие 220V
       lcd.setCursor(0,1);
       lcd.print(ip);                                                                                    // Текущий IP адресс устройства
       LCD = 0;                                                                                          // Сбрасываем на 1 страницу отображения
@@ -325,7 +324,7 @@ void gprssend(){
   }
     //Собираем данные в кучу для отправки
     val = "#9512973831000000#Garage.Station\n#H1DHT22#";  // MAC: 9512973831000000; Name: Garage.Station;
-    val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#S0#"+!ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
+    val = val + h1 + "\n#T1DHT22#"+t1+"\n#H2DHT22#"+h2+"\n#T2DHT22#"+t2+"\n#T3DHT22#"+t3+"\n#S0#"+ac+"\n#ERR1#"+!errSensor1+"\n#ERR2#"+!errSensor2+"\n#ERR3#"+!errSensor3;
     val = val + "\n##";
 
   //Отправляем
