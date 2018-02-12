@@ -65,7 +65,7 @@ String at;
 
   // Настраиваем порты
   pinMode(LED220, OUTPUT);
-  pinMode(ACDC, OUTPUT);
+  pinMode(ACDC, INPUT_PULLUP);
   pinMode(LEDGPRS, OUTPUT);
   pinMode(STATLED1, OUTPUT);
   pinMode(STATLED1, OUTPUT);
@@ -226,7 +226,7 @@ void lcdPrint(){
     LCD++;                                                                                              // Переходим на следующую страницу дисплея
     }else{
       lcd.clear(); lcd.setCursor(0,0);
-      lcd.print("3T");      lcd.print(t3);      lcd.print("C    AC:");      lcd.print(ac);              // Температура на улице и наличие 220V
+      lcd.print("3T");      lcd.print(t3);      lcd.print("C   AC:");      lcd.print(ac);              // Температура на улице и наличие 220V
       lcd.setCursor(0,1);
       lcd.print(ip);                                                                                    // Текущий IP адресс устройства
       LCD = 0;                                                                                          // Сбрасываем на 1 страницу отображения
