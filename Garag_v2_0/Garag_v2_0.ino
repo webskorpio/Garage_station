@@ -88,7 +88,7 @@ String at;
   // Проверяем готовность модема
   do{
      gsm.println("AT+CPAS");
-     Serial.print("!");
+     //Serial.print("!");
      delay(100);
      }while(!gsm.find('0'));
      
@@ -102,7 +102,7 @@ String at;
     
   do{
      gsm.println("AT+CREG?");
-     Serial.print(":");
+    // Serial.print(":");
      delay(100);
       }while(!gsm.find('+CREG: 0,1'));
       
@@ -126,6 +126,8 @@ String at;
   lcd.print("  START SYSTEM  ");
   sensorRead();
   lcdPrint();
+  gprssend();
+  loopTime = currentTime;
 }
 
 
@@ -149,7 +151,7 @@ void loop() {
      gprsconnect();                                                                                   // Если нет, то подключаемся
      delay(2000);
     }else{
-        Serial.print("/");
+        //Serial.print("/");
         gprsIp = 0;
       }
     newConnectTime=connectTime;
@@ -209,7 +211,7 @@ void sensorRead(){
   if(errSensor2 != 0) { digitalWrite(STATLED2, HIGH); }else{ digitalWrite(STATLED2, LOW); }
 
   ac = digitalRead(ACDC);                                                                               // Считываем состояние 220В
-  if(ac == LOW) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }                      // Выставляем статус светодиода наличия 220В
+  if(ac == LOW) { digitalWrite(LED220, HIGH); }else{ digitalWrite(LED220, LOW); }                       // Выставляем статус светодиода наличия 220В
   if (gprsIp == 0){ digitalWrite(LEDGPRS, LOW); }else{ digitalWrite(LEDGPRS, HIGH); }                   // Выставляем статус светодиода наличия соединения с Internet
 
 
@@ -226,7 +228,11 @@ void lcdPrint(){
     LCD++;                                                                                              // Переходим на следующую страницу дисплея
     }else{
       lcd.clear(); lcd.setCursor(0,0);
+<<<<<<< HEAD
       lcd.print("3T");      lcd.print(t3);      lcd.print("C   AC:");      lcd.print(ac);              // Температура на улице и наличие 220V
+=======
+      lcd.print("3T");      lcd.print(t3);      lcd.print("C    AC:");      lcd.print(ac);             // Температура на улице и наличие 220V
+>>>>>>> b4d675a475599e910a44798833e351dc13127133
       lcd.setCursor(0,1);
       lcd.print(ip);                                                                                    // Текущий IP адресс устройства
       LCD = 0;                                                                                          // Сбрасываем на 1 страницу отображения
@@ -250,7 +256,9 @@ void gprsconnect(){
   // Проверяем выдали ли нам IP
   do{
     gsm.println("at+xiic?");
-    if(connetError != 0) { Serial.println("no_ip"); }
+    if(connetError != 0) { 
+      //Serial.println("no_ip"); 
+      }
     delay(300);
     gprsIp = 1;                                                     //Если нет соединения с Internet гасим диод
     connetError++;
@@ -258,12 +266,12 @@ void gprsconnect(){
 
   if(connetError == 9){
     connetError = 0;
-    Serial.println("The number of attempts to obtain IP has been exhausted.");
-    Serial.println("Reconnecting");
+    //Serial.println("The number of attempts to obtain IP has been exhausted.");
+    //Serial.println("Reconnecting");
     ip = ipRep();
     }else{
     connetError = 0;
-    Serial.println("ok_ip");
+    //Serial.println("ok_ip");
     ip = ipRep();
     gprsIp = 0;                                                     // Если соединение установлено зажигаем диод
     }
@@ -308,7 +316,7 @@ void gprssend(){
     delay(2500);
     if (gsm.find('+TCPSETUP:0,OK')) break;                // Если соединились, выходим из цикла
     delay(300);
-    Serial.println("tcp_err"); 
+    //Serial.println("tcp_err"); 
     //   if (gsm.find("+TCPSETUP:0,FAIL") or gsm.find("+TCPSETUP:Error 2")) Serial.println("tcp_err");  // Выводим ошибку при отсутствии соединения
                                
     //Если нет, проверяем соединины ли с интернетом
@@ -334,8 +342,10 @@ void gprssend(){
   delay(200);
   gsm.println(val);
   delay(250);
+  /*
   if (gsm.find("+TCPSEND")) Serial.println("sendOK");
-  else Serial.println("sendERROR");
+  else Serial.println("sendERROR"); 
+  */
   gsm.println("AT+TCPCLOSE=0");                           // Закрываем соединение
 }
 
